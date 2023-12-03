@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,13 +23,18 @@ public class TodoController {
 	private TodoService service;
 	
 	@PostMapping
-	public TodoResponse createTodo(TodoRequest toCreate) {
+	public TodoResponse createTodo(@RequestBody TodoRequest toCreate) {
 		return service.createTodo(toCreate);
 	}
+
+	@PutMapping
+	public TodoResponse updateTodo(@RequestBody TodoRequest toUpdate) {
+		return service.updateTodo(toUpdate);
+	}
 	
-	@PostMapping("/work")
-	public TodoResponse work(TodoRequest toWork) {
-		return service.work(toWork);
+	@PostMapping("/markAsDone")
+	public TodoResponse markAsDone(TodoRequest toMark) {
+		return service.done(toMark);
 	}
 	
 	@GetMapping("/{id}")

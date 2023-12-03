@@ -1,6 +1,7 @@
 package org.fmiplovdiv.weblanguages.todo.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.fmiplovdiv.weblanguages.todo.dto.TeamMemberRepository;
 import org.fmiplovdiv.weblanguages.todo.dto.TodoRepository;
@@ -26,20 +27,53 @@ public class TodoService {
 	}
 	
 	@Transactional
+	public TodoResponse updateTodo(TodoRequest toUpdate) {
+		if (!teamMemberRepository.existsById(toUpdate.getTeamMember())) {
+			return null;
+		}
+
+		Optional<Todo> optional = todoRepository.findById(toUpdate.id());
+		if (optional.isEmpty()) {
+			return null;
+		}
+
+		Todo t = optional.get();
+
+		if (t.getTodoStatus() == TodoStatus.DONE) {
+			return null;
+		}
+
+		if (!toUpdate.getTask().isEmpty()) {
+			t.setTask(toUpdate.getTask());
+		}
+
+		if (!toUpdate.getDescription().isEmpty()) {
+			t.setDescription(toUpdate.getDescription());
+		}
+
+		if (t.getTeamMember().getId() != toUpdate.getId()) {
+			t.setTeamMember(teamMemberRepository.findById(toUpdate.getId()).get());
+		}
+
+		t = todoRepository.save(t);
+		return new TodoResponse(t.getId(), t.getTask(), t.getDescription(), t.getTodoStatus().ordinal(), t.getTeamMember().getId());
+	}
+	
+	@Transactional
 	public TodoResponse createTodo(TodoRequest toCreate) {
 		
-		if (!teamMemberRepository.existsById(toCreate.teamMember())) {
+		if (!teamMemberRepository.existsById(toCreate.getTeamMember())) {
 			return null;
 		}
 		
-		if (toCreate.task() == null || toCreate.description() == null) {
+		if (toCreate.getTask() == null || toCreate.getDescription() == null) {
 			return null;
 		}
 		
 		Todo toSave = new Todo();
-		toSave.setTask(toCreate.task());
-		toSave.setDescription(toCreate.description());
-		toSave.setTeamMember(teamMemberRepository.findById(toCreate.teamMember()).get());
+		toSave.setTask(toCreate.getTask());
+		toSave.setDescription(toCreate.getDescription());
+		toSave.setTeamMember(teamMemberRepository.findById(toCreate.getTeamMember()).get());
 		
 		int inProgress = todoRepository
 				.countByTeamMemberAndTodoStatus(
@@ -99,14 +133,14 @@ public class TodoService {
 	}
 	
 	@Transactional
-	public TodoResponse work(TodoRequest toWork) {
-		Todo todo = todoRepository.findById(toWork.id()).orElse(null);
+	public TodoResponse done(TodoRequest toMark) {
+		Todo todo = todoRepository.findById(toMark.getId()).orElse(null);
 		
 		if (todo == null) {
 			return null;
 		}
 		
-		if (todo.getTeamMember().getId() != toWork.teamMember()) {
+		if (todo.getTeamMember().getId() != toMark.getTeamMember()) {
 			return null;
 		}
 		

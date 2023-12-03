@@ -31,12 +31,12 @@ public class TeamMemberService {
 	@Transactional
 	public TeamMemberResponse createTeamMember(TeamMemberRequest toCreate) {
 		
-		if (toCreate.name() == null) {
+		if (toCreate.getName() == null) {
 			return null;
 		}
 		
 		TeamMember toSave = new TeamMember();
-		toSave.setName(toCreate.name());
+		toSave.setName(toCreate.getName());
 		
 		toSave = teamMemberRepository.save(toSave);
 		
