@@ -33,7 +33,7 @@ public class TodoController {
 	}
 	
 	@PostMapping("/markAsDone")
-	public TodoResponse markAsDone(TodoRequest toMark) {
+	public TodoResponse markAsDone(@RequestBody TodoRequest toMark) {
 		return service.done(toMark);
 	}
 	

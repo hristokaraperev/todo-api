@@ -28,21 +28,6 @@ public class TeamMemberService {
 		this.todoRepository = todoRepository;
 	}
 	
-	@Transactional
-	public TeamMemberResponse createTeamMember(TeamMemberRequest toCreate) {
-		
-		if (toCreate.getName() == null) {
-			return null;
-		}
-		
-		TeamMember toSave = new TeamMember();
-		toSave.setName(toCreate.getName());
-		
-		toSave = teamMemberRepository.save(toSave);
-		
-		return new TeamMemberResponse(toSave.getId(), toSave.getName());
-	}
-	
 	public List<TeamMemberResponse> getAllTeamMembers() {
 		List<TeamMember> toReturn = teamMemberRepository.findAll();
 		

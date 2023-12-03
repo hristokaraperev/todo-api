@@ -32,7 +32,7 @@ public class TodoService {
 			return null;
 		}
 
-		Optional<Todo> optional = todoRepository.findById(toUpdate.id());
+		Optional<Todo> optional = todoRepository.findById(toUpdate.getId());
 		if (optional.isEmpty()) {
 			return null;
 		}
